@@ -1,0 +1,42 @@
+public class BPlusTreeEstimate {
+
+    public static void main(String[] args) {
+
+        long records = 500000000L;   // 5 × 10^8
+        int pageSize = 4096;         // 4 KB page
+
+        int keySize = 64;            // bytes
+        int payloadSize = 100;       // bytes
+        int pointerSize = 8;         // bytes
+
+        // Leaf fanout
+        int leafEntrySize = keySize + payloadSize;
+        int leafFanout = pageSize / leafEntrySize;
+
+        // Internal node fanout
+        int internalEntrySize = keySize + pointerSize;
+        int internalFanout = pageSize / internalEntrySize;
+
+        // Number of leaf pages
+        double leafPages = Math.ceil((double) records / leafFanout);
+
+        // Calculate height
+        int height = 1;
+        double nodes = leafPages;
+
+        while (nodes > 1) {
+            nodes = Math.ceil(nodes / internalFanout);
+            height++;
+        }
+
+        System.out.println("Leaf Fanout = " + leafFanout);
+        System.out.println("Internal Fanout = " + internalFanout);
+        System.out.println("B+ Tree Height = " + height);
+
+        // Top 3 levels cached
+        int ioCost = Math.max(1, height - 3);
+
+        System.out.println("Point Lookup I/O Cost = "
+                + ioCost + " page read(s)");
+    }
+}

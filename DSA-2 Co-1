@@ -1,0 +1,56 @@
+class Node {
+    int rep;
+    Node left, right;
+
+    Node(int rep) {
+        this.rep = rep;
+        left = right = null;
+    }
+}
+
+public class ReputationRangeQuery {
+
+    Node root;
+
+    Node insert(Node root, int rep) {
+        if (root == null)
+            return new Node(rep);
+
+        if (rep < root.rep)
+            root.left = insert(root.left, rep);
+        else
+            root.right = insert(root.right, rep);
+
+        return root;
+    }
+
+    void rangeScan(Node root, int low, int high) {
+        if (root == null)
+            return;
+
+        if (root.rep > low)
+            rangeScan(root.left, low, high);
+
+        if (root.rep >= low && root.rep <= high)
+            System.out.print(root.rep + " ");
+
+        if (root.rep < high)
+            rangeScan(root.right, low, high);
+    }
+
+    public static void main(String[] args) {
+        ReputationRangeQuery bst = new ReputationRangeQuery();
+
+        int reputation[] = {
+            5000, 12000, 18000,
+            25000, 35000, 45000,
+            60000
+        };
+
+        for (int r : reputation)
+            bst.root = bst.insert(bst.root, r);
+
+        System.out.println("Users with reputation in [10000, 50000]:");
+        bst.rangeScan(bst.root, 10000, 50000);
+    }
+}

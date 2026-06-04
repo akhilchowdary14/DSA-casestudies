@@ -1,0 +1,44 @@
+import java.util.*;
+
+public class CycleDetectionDFS {
+
+    static Map<String, List<String>> graph = new HashMap<>();
+    static Map<String, Integer> color = new HashMap<>();
+
+    static boolean dfs(String node) {
+        color.put(node, 1); // GREY
+
+        for (String neighbor : graph.getOrDefault(node, new ArrayList<>())) {
+
+            if (color.get(neighbor) == 1) { // GREY
+                System.out.println("Cycle detected at edge: "
+                        + node + " -> " + neighbor);
+                return true;
+            }
+
+            if (color.get(neighbor) == 0) { // WHITE
+                if (dfs(neighbor))
+                    return true;
+            }
+        }
+
+        color.put(node, 2); // BLACK
+        return false;
+    }
+
+    public static void main(String[] args) {
+
+        graph.put("build", Arrays.asList("test"));
+        graph.put("test", Arrays.asList("integration"));
+        graph.put("integration", Arrays.asList("build"));
+        graph.put("deploy", Arrays.asList("build"));
+
+        for (String node : graph.keySet())
+            color.put(node, 0); // WHITE
+
+        if (dfs("deploy"))
+            System.out.println("Workflow contains a cycle.");
+        else
+            System.out.println("No cycle found.");
+    }
+}
